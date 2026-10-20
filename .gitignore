@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.npm/
+
+# Package manager lockfiles and logs
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+yarn.lock
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment and local server logs
+*.log
+.env
+.env.local
