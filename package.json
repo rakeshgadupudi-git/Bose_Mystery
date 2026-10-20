@@ -5,8 +5,10 @@
   "main": "tailwind.config.js",
   "scripts": {
     "start": "python -m http.server 8080",
-    "build:css": "npx tailwindcss -i ./src/input.css -o ./dist/styles.css --minify",
+    "build": "node build.js",
+    "build:css": "node build.js",
     "watch:css": "npx tailwindcss -i ./src/input.css -o ./dist/styles.css --watch",
+    "deploy": "npx wrangler deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

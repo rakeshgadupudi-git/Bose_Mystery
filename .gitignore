@@ -25,3 +25,11 @@ desktop.ini
 *.log
 .env
 .env.local
+
+# Cloudflare Wrangler
+.wrangler/
+worker-configuration.d.ts
+
+# Generated build output (rebuilt by build script)
+dist/*
+!dist/styles.css

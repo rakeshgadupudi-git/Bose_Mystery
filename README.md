@@ -169,6 +169,92 @@ http://localhost:8080/index.html
 
 ---
 
+## ☁️ Deployment Guide (Cloudflare Pages)
+
+Because this application is built with a zero-runtime-dependency static architecture, it is ideally suited for **Cloudflare Pages**—offering global CDN distribution, automatic SSL/TLS, and instantaneous edge caching with zero hosting cost.
+
+### Method 1: Git Integration (Recommended — Continuous Deployment)
+
+This method automatically builds and deploys your site whenever you push code to GitHub or GitLab.
+
+#### Step 1: Push your project to GitHub
+If you haven't pushed your repository to GitHub yet:
+```bash
+# 1. Commit all staged files
+git commit -m "feat: Initial commit of Netaji digital biography platform"
+
+# 2. Add your remote GitHub repository
+git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+
+# 3. Rename branch to main and push
+git branch -M main
+git push -u origin main
+```
+
+#### Step 2: Connect to Cloudflare Pages
+1. Log in to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. In the left navigation sidebar, select **Workers & Pages** > **Create application**.
+3. Choose the **Pages** tab and click **Connect to Git**.
+4. Select your GitHub / GitLab account and choose your `Bose_Bio` repository.
+5. Click **Begin setup**.
+
+#### Step 3: Configure Build & Deployment Settings
+Fill in the deployment configuration:
+- **Project name**: `bose-biography` (or your preferred subdomain)
+- **Production branch**: `main`
+- **Framework preset**: `None`
+- **Build command**:
+  ```bash
+  npm run build:css
+  ```
+- **Build output directory**:
+  ```text
+  .
+  ```
+  *(Entering a single dot `.` tells Cloudflare that `index.html`, `dist/styles.css`, and `static/` reside in the project root)*
+- **Root directory**: Leave blank (default: `/`)
+
+#### Step 4: Deploy
+Click **Save and Deploy**. Cloudflare will automatically:
+1. Pull your code.
+2. Run `npm install` and compile `dist/styles.css` via Tailwind CLI.
+3. Deploy your website globally across Cloudflare's edge network in seconds.
+4. Provide a free production URL (e.g., `https://bose-biography.pages.dev`).
+
+---
+
+### Method 2: Instant CLI Deployment (Wrangler)
+
+If you prefer to deploy directly from your terminal without connecting Git:
+
+1. Build the production CSS bundle locally:
+   ```bash
+   npm run build:css
+   ```
+2. Deploy via Cloudflare's Wrangler tool:
+   ```bash
+   npx wrangler pages deploy . --project-name=bose-biography
+   ```
+3. When prompted, log in to your Cloudflare account in your browser to authorize. Wrangler will deploy the current folder and output your live `.pages.dev` URL.
+
+---
+
+### Method 3: Drag & Drop (Direct Upload via Dashboard)
+
+1. Run `npm run build:css` locally to ensure `dist/styles.css` is updated.
+2. Navigate to [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages** > **Create application** > **Pages** > **Upload assets**.
+3. Name your project (e.g., `bose-biography`).
+4. Drag and drop the `Bose_Bio` project directory (ensure `index.html`, `dist/`, and `static/` are included, but exclude `node_modules`).
+5. Click **Deploy site**.
+
+---
+
+### 🌐 Custom Domain & Production Headers
+- **Custom Domain**: In your project on Cloudflare Pages, go to **Custom domains** > **Set up a custom domain** (e.g., `netaji.yourdomain.com`). Cloudflare configures the DNS and provisions a free Universal SSL certificate automatically.
+- **Cache Optimization**: The included `_headers` file automatically instructs Cloudflare to cache images in `/static/*` and styles in `/dist/*` immutably on the edge for 1 year while serving security headers (`X-Frame-Options`, `X-Content-Type-Options`).
+
+---
+
 ## 🛡️ Performance, Accessibility & SEO
 
 - **Accessibility (a11y)**:
