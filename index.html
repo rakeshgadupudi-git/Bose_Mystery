@@ -58,8 +58,8 @@
 <!-- ============================================================
      NAVIGATION
 ============================================================ -->
-<nav id="main-nav" aria-label="Primary" class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-300" style="padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+<nav id="main-nav" aria-label="Primary" class="fixed top-0 left-0 w-full z-50 bg-white shadow-sm transition-all duration-300" style="padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-50 bg-white">
         <div class="flex justify-between items-center h-16">
             <a href="#hero" class="text-xl font-black text-forest tracking-tight uppercase font-serif">Netaji</a>
 
@@ -87,14 +87,14 @@
             </button>
         </div>
         <!-- Progress bar inside nav, on the bottom edge -->
-        <div id="progress-bar" class="absolute bottom-0 left-0 z-[60]" style="width:0%" role="progressbar" aria-hidden="true"></div>
+        <div id="progress-bar" class="absolute bottom-0 left-0 z-[60] transition-opacity duration-200" style="width:0%" role="progressbar" aria-hidden="true"></div>
     </div>
 
     <!-- Mobile menu backdrop -->
     <div id="menu-backdrop" class="menu-backdrop" aria-hidden="true"></div>
 
-    <div id="mobile-menu" class="mobile-menu lg:hidden bg-white border-t border-gray-100 max-h-[calc(100svh-4rem)] overflow-y-auto overscroll-contain">
-        <ul class="px-4 py-3 space-y-1">
+    <div id="mobile-menu" class="mobile-menu lg:hidden bg-white border-t border-gray-100 max-h-[calc(100svh-4rem)] max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain relative z-50 shadow-xl">
+        <ul class="px-4 py-3 space-y-1 pb-[max(2rem,env(safe-area-inset-bottom))]">
             <li><a href="#introduction" class="block px-4 py-3 rounded-lg hover:bg-saffron-50 text-gray-700 font-medium min-h-[44px] flex items-center" data-nav="intro">Introduction</a></li>
             <li><a href="#early-life" class="block px-4 py-3 rounded-lg hover:bg-saffron-50 text-gray-700 font-medium min-h-[44px] flex items-center" data-nav="early-life">Early Life</a></li>
             <li><a href="#education" class="block px-4 py-3 rounded-lg hover:bg-saffron-50 text-gray-700 font-medium min-h-[44px] flex items-center" data-nav="education">Education</a></li>
@@ -684,7 +684,7 @@
         </div>
 
         <!-- Rani of Jhansi Regiment -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden reveal mb-12">
+        <div id="ch-09" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden reveal mb-12 scroll-mt-20" data-nav="ina">
             <div class="grid grid-cols-1 lg:grid-cols-2">
                 <div class="p-6 sm:p-10 lg:p-14 flex flex-col justify-center">
                     <p class="chapter-label mb-3">Chapter 09</p>
@@ -2173,13 +2173,26 @@ document.addEventListener('DOMContentLoaded', function () {
     var menuBackdrop = document.getElementById('menu-backdrop');
     var hamburgerIcon = mobileBtn ? mobileBtn.querySelector('.hamburger-icon') : null;
     var closeIcon = mobileBtn ? mobileBtn.querySelector('.close-icon') : null;
+    var progressBar = document.getElementById('progress-bar');
+
+    function updateMenuHeight() {
+        if (!mobileMenu || !mobileBtn || mobileBtn.getAttribute('aria-expanded') !== 'true') return;
+        var availableHeight = window.innerHeight - 64;
+        var targetHeight = Math.min(mobileMenu.scrollHeight, availableHeight);
+        mobileMenu.style.maxHeight = targetHeight + 'px';
+    }
 
     function openMenu() {
-        mobileMenu.style.maxHeight = mobileMenu.scrollHeight + 'px';
+        mobileMenu.scrollTop = 0;
+        var availableHeight = window.innerHeight - 64;
+        var targetHeight = Math.min(mobileMenu.scrollHeight, availableHeight);
+        mobileMenu.style.maxHeight = targetHeight + 'px';
         mobileBtn.setAttribute('aria-expanded', 'true');
         if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
         if (closeIcon) closeIcon.classList.remove('hidden');
         if (menuBackdrop) menuBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        if (progressBar) progressBar.style.opacity = '0';
         var firstLink = mobileMenu.querySelector('a');
         if (firstLink) firstLink.focus();
     }
@@ -2190,6 +2203,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
         if (closeIcon) closeIcon.classList.add('hidden');
         if (menuBackdrop) menuBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+        if (progressBar) progressBar.style.opacity = '1';
     }
 
     if (mobileBtn && mobileMenu) {
@@ -2214,10 +2229,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1024 && mobileBtn.getAttribute('aria-expanded') === 'true') {
-                closeMenu();
+            if (window.innerWidth >= 1024) {
+                if (mobileBtn.getAttribute('aria-expanded') === 'true') {
+                    closeMenu();
+                }
+            } else {
+                updateMenuHeight();
             }
         }, { passive: true });
+
+        window.addEventListener('orientationchange', function() {
+            setTimeout(updateMenuHeight, 150);
+        });
     }
 
     // ===== ACTIVE NAV LINK — THIN-LINE OBSERVER (G3) =====
